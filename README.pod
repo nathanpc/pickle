@@ -1,0 +1,38 @@
+=pod
+
+=head1 NAME
+
+PickLE - An electronic component pick list application and file parser library.
+
+=head1 VERSION
+
+0.1.0
+
+=head1 SUMMARY
+
+An application and a parsing library to create an electronic component pick list
+file format designed to be not only human-readable, but completely usable on its
+own plain-text form.
+
+=head1 SYNOPSIS
+
+Just run C<pickle>.
+
+=head1 REQUIREMENTS
+
+You must have installed all of the third-party libraries listed in C<cpanfile>.
+
+=head1 LICENSE
+
+This library is free software; you may redistribute and/or modify it under the
+same terms as Perl itself.
+
+=head1 AUTHOR
+
+Nathan Campos <nathan@dreamintech.net>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2022- Nathan Campos.
+
+=cut
