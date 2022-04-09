@@ -29,7 +29,7 @@ same terms as Perl itself.
 
 =head1 AUTHOR
 
-Nathan Campos <nathan@dreamintech.net>
+Nathan Campos <nathan@innoveworkshop.com>
 
 =head1 COPYRIGHT
 
