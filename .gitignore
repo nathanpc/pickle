@@ -1,6 +1,6 @@
 # Private file.
 *.xls*
-*.csv
+#*.csv
 
 # Core Perl.
 !Build/
