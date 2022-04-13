@@ -23,8 +23,7 @@ Has the component in the list already been picked?
 =cut
 
 has picked => {
-	is => 'rw',
-	required => 1
+	is => 'rw'
 };
 
 =item I<name>
@@ -35,8 +34,7 @@ in the list without being too descriptive.
 =cut
 
 has name => {
-	is => 'rw',
-	required => 1
+	is => 'rw'
 };
 
 =item I<refdes>
@@ -48,8 +46,7 @@ components to be picked.
 =cut
 
 has refdes => {
-	is => 'rw',
-	required => 1
+	is => 'rw'
 };
 
 =item I<case>
@@ -72,12 +69,12 @@ has case => {
 
 =over 4
 
-=item I<$comp> = C<PickLE::Component>->C<new>(I<picked>, I<name>, I<refdes>[,
+=item I<$comp> = C<PickLE::Component>->C<new>([I<picked>, I<name>, I<refdes>,
 I<case>])
 
 Initializes a component object with a I<name>, the reference designator list
-(I<refdes>), if the component has been I<picked>, and an optional component
-package (I<case>).
+(I<refdes>), if the component has been I<picked>, and an component package
+(I<case>).
 
 =item I<$quantity> = I<$comp>->C<quantity>()
 
