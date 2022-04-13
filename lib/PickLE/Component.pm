@@ -12,34 +12,65 @@ use strict;
 use warnings;
 use Moo;
 
-# Component has been picked?
+=head1 ATTRIBUTES
+
+=over 4
+
+=item I<picked>
+
+Has the component in the list already been picked?
+
+=cut
+
 has picked => {
-	is => 'ro',
+	is => 'rw',
 	required => 1
 };
 
-# Component name.
+=item I<name>
+
+Name or part number of the component. A way to uniquely identify this component
+in the list without being too descriptive.
+
+=cut
+
 has name => {
-	is => 'ro',
+	is => 'rw',
 	required => 1
 };
 
-# Reference designators.
+=item I<refdes>
+
+A B<list reference> of reference designators for this component. This is
+important since it'll be the only way this class can determine the quantity of
+components to be picked.
+
+=cut
+
 has refdes => {
-	is => 'ro',
+	is => 'rw',
 	required => 1
 };
 
-# Component package.
+=item I<case>
+
+I<Optional>. Since C<package> is kind of a reserved word, this defines the
+component package as a simple string. This attribute also has associated
+clearer (C<clear_case>) and predicate (C<has_case>) methods.
+
+=cut
+
 has case => {
-	is => 'ro'
+	is => 'rw',
+	clearer => 'clear_case',
+	predicate => 'has_case'
 };
+
+=back
 
 =head1 METHODS
 
-=over
-
-=item 4
+=over 4
 
 =item I<$comp> = C<PickLE::Component>->C<new>(I<picked>, I<name>, I<refdes>[,
 I<case>])
@@ -89,6 +120,8 @@ sub as_string {
 }
 
 1;
+
+__END__
 
 =back
 
