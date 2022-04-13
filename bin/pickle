@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+C<App::PickLE> - An electronic component pick list application.
+
+=cut
+
+package App::PickLE;
+
+use strict;
+use warnings;
+
+# Program's main entry point.
+sub main {
+	print "Hello World!";
+}
+
+main();
+
+=head1 AUTHOR
+
+Nathan Campos <nathan@innoveworkshop.com>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2022- Nathan Campos.
+
+=cut
