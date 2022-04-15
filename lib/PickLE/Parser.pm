@@ -35,12 +35,12 @@ List of items to be picked in the form of an L<PickLE::Document> object.
 
 =cut
 
-has picklist => {
+has picklist => (
 	is       => 'ro',
 	lazy     => 1,
 	init_arg => [],
 	writer   => '_set_picklist'
-};
+);
 
 =back
 

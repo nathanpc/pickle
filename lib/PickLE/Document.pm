@@ -28,7 +28,7 @@ use PickLE::Parser;
 
   # Load from file.
   $doc = PickLE::Document->load("example.pkl");
-  foreach my $component ($doc->components) {
+  foreach my $component (@{$doc->components}) {
       say $component->name;
   }
 
@@ -42,12 +42,12 @@ List of components to be picked.
 
 =cut
 
-has components => {
+has components => (
 	is       => 'ro',
 	lazy     => 1,
 	init_arg => [],
 	writer   => '_set_components'
-};
+);
 
 =back
 

@@ -22,9 +22,9 @@ Has the component in the list already been picked?
 
 =cut
 
-has picked => {
+has picked => (
 	is => 'rw'
-};
+);
 
 =item I<name>
 
@@ -33,9 +33,9 @@ in the list without being too descriptive.
 
 =cut
 
-has name => {
+has name => (
 	is => 'rw'
-};
+);
 
 =item I<value>
 
@@ -45,11 +45,11 @@ attribute also has associated clearer (C<clear_value>) and predicate
 
 =cut
 
-has value => {
+has value => (
 	is        => 'rw',
 	clearer   => 'clear_value',
 	predicate => 'has_value'
-};
+);
 
 =item I<description>
 
@@ -59,11 +59,11 @@ clearer (C<clear_description>) and predicate (C<has_description>) methods.
 
 =cut
 
-has description => {
+has description => (
 	is        => 'rw',
 	clearer   => 'clear_description',
 	predicate => 'has_description'
-};
+);
 
 =item I<case>
 
@@ -73,11 +73,11 @@ and predicate (C<has_case>) methods.
 
 =cut
 
-has case => {
+has case => (
 	is        => 'rw',
 	clearer   => 'clear_case',
 	predicate => 'has_case'
-};
+);
 
 =item I<refdes>
 
@@ -87,10 +87,10 @@ components to be picked.
 
 =cut
 
-has refdes => {
+has refdes => (
 	is       => 'rw',
 	init_arg => []
-};
+);
 
 =back
 
@@ -114,7 +114,6 @@ Adds any number of reference designators to the reference designator list.
 
 sub add_refdes {
 	my $self = shift;
-
 	push @{$self->refdes}, @_;
 }
 
@@ -149,8 +148,8 @@ sub as_string {
 
 	# Reference designators.
 	$str .= '\n';
-	foreach (@{$self->refdes}) {
-		$str .= $self->refdes[$i];
+	foreach my $refdes (@{$self->refdes}) {
+		$str .= "$refdes ";
 	}
 
 	# Remove any trailling whitespace and return.
