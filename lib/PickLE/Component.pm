@@ -46,7 +46,8 @@ components to be picked.
 =cut
 
 has refdes => {
-	is => 'rw'
+	is       => 'rw',
+	init_arg => []
 };
 
 =item I<case>
@@ -58,8 +59,8 @@ clearer (C<clear_case>) and predicate (C<has_case>) methods.
 =cut
 
 has case => {
-	is => 'rw',
-	clearer => 'clear_case',
+	is        => 'rw',
+	clearer   => 'clear_case',
 	predicate => 'has_case'
 };
 
@@ -75,6 +76,18 @@ I<case>])
 Initializes a component object with a I<name>, the reference designator list
 (I<refdes>), if the component has been I<picked>, and an component package
 (I<case>).
+
+=item I<$comp>->C<add_refdes>(I<@refdes>)
+
+Adds any number of reference designators to the reference designator list.
+
+=cut
+
+sub add_refdes {
+	my $self = shift;
+
+	push @{$self->refdes}, @_;
+}
 
 =item I<$quantity> = I<$comp>->C<quantity>()
 
