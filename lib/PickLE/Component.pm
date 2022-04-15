@@ -37,6 +37,48 @@ has name => {
 	is => 'rw'
 };
 
+=item I<value>
+
+Component value if it has one. Useful for things like passive components. This
+attribute also has associated clearer (C<clear_value>) and predicate
+(C<has_value>) methods.
+
+=cut
+
+has value => {
+	is        => 'rw',
+	clearer   => 'clear_value',
+	predicate => 'has_value'
+};
+
+=item I<description>
+
+A brief description of the component to make it easier to understand what the
+often times cryptic I<name> refers to. This attribute also has associated
+clearer (C<clear_description>) and predicate (C<has_description>) methods.
+
+=cut
+
+has description => {
+	is        => 'rw',
+	clearer   => 'clear_description',
+	predicate => 'has_description'
+};
+
+=item I<case>
+
+Since C<package> is kind of a reserved word, this defines the component package
+as a simple string. This attribute also has associated clearer (C<clear_case>)
+and predicate (C<has_case>) methods.
+
+=cut
+
+has case => {
+	is        => 'rw',
+	clearer   => 'clear_case',
+	predicate => 'has_case'
+};
+
 =item I<refdes>
 
 A B<list reference> of reference designators for this component. This is
@@ -50,31 +92,18 @@ has refdes => {
 	init_arg => []
 };
 
-=item I<case>
-
-I<Optional>. Since C<package> is kind of a reserved word, this defines the
-component package as a simple string. This attribute also has associated
-clearer (C<clear_case>) and predicate (C<has_case>) methods.
-
-=cut
-
-has case => {
-	is        => 'rw',
-	clearer   => 'clear_case',
-	predicate => 'has_case'
-};
-
 =back
 
 =head1 METHODS
 
 =over 4
 
-=item I<$comp> = C<PickLE::Component>->C<new>([I<picked>, I<name>, I<refdes>,
-I<case>])
+=item I<$comp> = C<PickLE::Component>->C<new>([I<picked>, I<name>, I<value>,
+I<description>, I<case>, I<refdes>])
 
 Initializes a component object with a I<name>, the reference designator list
-(I<refdes>), if the component has been I<picked>, and an component package
+(I<refdes>), if the component has been I<picked>, a I<value> in cases where it
+is applicable, a brief I<description> if you see fit, and an component package
 (I<case>).
 
 =item I<$comp>->C<add_refdes>(I<@refdes>)
