@@ -15,7 +15,7 @@ use Moo;
 use Carp;
 
 use PickLE::Component;
-use PickLE::PickList;
+use PickLE::Document;
 
 =head1 SYNOPSIS
 
@@ -23,7 +23,7 @@ use PickLE::PickList;
 
   # Parse a pick list file.
   $pickle = PickLE::Parser->load('example.pkl');
-  $picklist = $pickle->picklist;  # Gets a PickLE::PickList object.
+  $picklist = $pickle->picklist;  # Gets a PickLE::Document object.
 
 =head1 ATTRIBUTES
 
@@ -31,15 +31,15 @@ use PickLE::PickList;
 
 =item I<picklist>
 
-List of items to be picked in the form of an L<PickLE::PickList> object.
+List of items to be picked in the form of an L<PickLE::Document> object.
 
 =cut
 
 has picklist => {
-	is => 'ro',
-	lazy => 1,
+	is       => 'ro',
+	lazy     => 1,
 	init_arg => [],
-	writer => '_set_picklist'
+	writer   => '_set_picklist'
 };
 
 =back
@@ -96,6 +96,9 @@ sub _parse {
 	my $phase = $phases->{empty};
 	my $component = undef;
 
+	# Initialize a brand new pick list document.
+	$self->_set_picklist(PickLE::Document->new);
+
 	# Go through the file line-by-line.
 	while (my $line = <$fh>) {
 		chomp $line;
@@ -113,7 +116,7 @@ sub _parse {
 		} elsif ($phase == $phases->{refdes}) {
 			# Parse the reference designators.
 			if (substr($line, 0, 1) ne '') {
-				# TODO:
+				$component->add_refdes(split ' ', $line);
 			}
 
 			# Append the component to the pick list and go to the next line.
@@ -124,7 +127,32 @@ sub _parse {
 		}
 
 		# Parse the descriptor line into a component.
-		# TODO:
+		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
+			# Populate the component with required parameters.
+			$component->picked($+{picked} != ' ');
+			$component->name($+{name});
+
+			# Component value.
+			if (exists $+{value}) {
+				$component->value($+{value});
+			}
+
+			# Component description.
+			if (exists $+{description}) {
+				$component->value($+{description});
+			}
+
+			# Component package.
+			if (exists $+{case}) {
+				$component->value($+{case});
+			}
+
+			# Move to the next phase.
+			$phase = $phases->{refdes};
+		} else {
+			# Looks like the descriptor line was malformed.
+			carp "Error parsing component descriptor '$line'";
+		}
 	}
 }
 
