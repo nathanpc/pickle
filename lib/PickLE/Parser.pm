@@ -22,8 +22,8 @@ use PickLE::Document;
   use PickLE::Parser;
 
   # Parse a pick list file.
-  $pickle = PickLE::Parser->load('example.pkl');
-  $picklist = $pickle->picklist;  # Gets a PickLE::Document object.
+  my $parser = PickLE::Parser->load('example.pkl');
+  my $picklist = $parser->picklist;  # Gets a PickLE::Document object.
 
 =head1 ATTRIBUTES
 
@@ -48,13 +48,13 @@ has picklist => {
 
 =over 4
 
-=item I<$pickle> = C<PickLE::Parser>->C<new>()
+=item I<$parser> = C<PickLE::Parser>->C<new>()
 
 Initializes an empty parser object.
 
-=item I<$pickle> = C<PickLE::Parser>->C<load>(I<$filename>)
+=item I<$parser> = C<PickLE::Parser>->C<load>(I<$filename>)
 
-=item I<$pickle>->C<load>(I<$filename>)
+=item I<$parser>->C<load>(I<$filename>)
 
 Parses a component pick list file located at I<$filename>. This method can be
 called statically, in which case it'll return a contructed object, or as an
@@ -66,9 +66,10 @@ sub load {
 	my ($proto, $filename) = @_;
 	my $self = (ref $proto) ? $proto : $proto->new;
 
-	# Open the file for parsing.
-	open my $fh, '<', $filename;
+	# Parse the file.
+	open my $fh, '<:encoding(UTF-8)', $filename;
 	$self->_parse($fh);
+	close $fh;
 
 	return $self;
 }
@@ -120,7 +121,7 @@ sub _parse {
 			}
 
 			# Append the component to the pick list and go to the next line.
-			$self->picklist->add($component);
+			$self->picklist->add_component($component);
 			$component = undef;
 			$phase = $phases->{empty};
 			next;
