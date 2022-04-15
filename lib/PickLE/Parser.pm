@@ -36,10 +36,10 @@ List of items to be picked in the form of an L<PickLE::Document> object.
 =cut
 
 has picklist => (
-	is       => 'ro',
-	lazy     => 1,
-	init_arg => [],
-	writer   => '_set_picklist'
+	is      => 'ro',
+	lazy    => 1,
+	default => sub { [] },
+	writer  => '_set_picklist'
 );
 
 =back
@@ -114,6 +114,34 @@ sub _parse {
 				# Just another empty line...
 				next;
 			}
+		} elsif ($phase == $phases->{descriptor}) {
+			# Parse the descriptor line into a component.
+			if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
+				# Populate the component with required parameters.
+				$component->picked($+{picked} ne ' ');
+				$component->name($+{name});
+
+				# Component value.
+				if (exists $+{value}) {
+					$component->value($+{value});
+				}
+
+				# Component description.
+				if (exists $+{description}) {
+					$component->value($+{description});
+				}
+
+				# Component package.
+				if (exists $+{case}) {
+					$component->value($+{case});
+				}
+
+				# Move to the next phase.
+				$phase = $phases->{refdes};
+			} else {
+				# Looks like the descriptor line was malformed.
+				carp "Error parsing component descriptor '$line'";
+			}
 		} elsif ($phase == $phases->{refdes}) {
 			# Parse the reference designators.
 			if (substr($line, 0, 1) ne '') {
@@ -125,34 +153,6 @@ sub _parse {
 			$component = undef;
 			$phase = $phases->{empty};
 			next;
-		}
-
-		# Parse the descriptor line into a component.
-		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
-			# Populate the component with required parameters.
-			$component->picked($+{picked} != ' ');
-			$component->name($+{name});
-
-			# Component value.
-			if (exists $+{value}) {
-				$component->value($+{value});
-			}
-
-			# Component description.
-			if (exists $+{description}) {
-				$component->value($+{description});
-			}
-
-			# Component package.
-			if (exists $+{case}) {
-				$component->value($+{case});
-			}
-
-			# Move to the next phase.
-			$phase = $phases->{refdes};
-		} else {
-			# Looks like the descriptor line was malformed.
-			carp "Error parsing component descriptor '$line'";
 		}
 	}
 }
