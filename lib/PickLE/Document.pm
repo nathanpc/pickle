@@ -43,10 +43,10 @@ List of components to be picked.
 =cut
 
 has components => (
-	is       => 'ro',
-	lazy     => 1,
-	init_arg => [],
-	writer   => '_set_components'
+	is      => 'ro',
+	lazy    => 1,
+	default => sub { [] },
+	writer  => '_set_components'
 );
 
 =back

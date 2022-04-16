@@ -10,10 +10,26 @@ package App::PickLE;
 
 use strict;
 use warnings;
+use autodie;
+use DDP;
+use Data::Dumper;
+
+# Include the project module directory.
+use FindBin;
+use File::Spec;
+use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
+
+use PickLE::Document;
 
 # Program's main entry point.
 sub main {
-	print "Hello World!";
+	my $doc = PickLE::Document->load($ARGV[0]);
+	foreach my $component (@{$doc->components}) {
+		print Dumper($component);
+		#p $component;
+	}
+
+	return 0;
 }
 
 main();
