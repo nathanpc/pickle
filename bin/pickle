@@ -11,6 +11,7 @@ package App::PickLE;
 use strict;
 use warnings;
 use autodie;
+use utf8;
 use DDP;
 
 # Include the project module directory.
@@ -22,6 +23,9 @@ use PickLE::Document;
 
 # Program's main entry point.
 sub main {
+	# Enable UTF-8 output.
+	binmode STDOUT, ":encoding(utf8)";
+
 	# Load a pick list document.
 	my $doc = PickLE::Document->load($ARGV[0]);
 
@@ -32,7 +36,15 @@ sub main {
 
 		$doc->foreach_component({ category => $category }, sub {
 			my $component = shift;
-			print '    ' . $component->name . "\n";
+
+			# TODO: Make sure this is tabulated instead of just using TABs.
+			print '  ';
+			print (($component->picked) ? "\x{2611}" : "\x{2610}");
+			print ' ' . $component->quantity . "\t";
+			print $component->value . "\t" if defined $component->value;
+			print $component->name . "\t";
+			print $component->description if defined $component->description;
+			print "\n";
 		});
 
 		print "\n";
