@@ -146,12 +146,12 @@ sub _parse {
 
 			# Component description.
 			if (exists $+{description}) {
-				$component->value($+{description});
+				$component->description($+{description});
 			}
 
 			# Component package.
 			if (exists $+{case}) {
-				$component->value($+{case});
+				$component->case($+{case});
 			}
 
 			# Move to the next phase.
