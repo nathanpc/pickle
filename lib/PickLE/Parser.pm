@@ -163,17 +163,13 @@ sub _parse {
 	}
 }
 
-=item I<$self>->C<_set_picklist>(I<$picklist>)
-
-Sets the I<picklist> attribute internally.
+=back
 
 =cut
 
 1;
 
 __END__
-
-=back
 
 =head1 AUTHOR
 
