@@ -88,8 +88,8 @@ components to be picked.
 =cut
 
 has refdes => (
-	is       => 'rw',
-	init_arg => []
+	is      => 'rw',
+	default => sub { [] }
 );
 
 =back

@@ -8,6 +8,7 @@ C<PickLE::Parser> - Parses a component pick list file
 
 package PickLE::Parser;
 
+use 5.010;
 use strict;
 use warnings;
 use autodie;
@@ -23,7 +24,7 @@ use PickLE::Document;
 
   # Parse a pick list file.
   my $parser = PickLE::Parser->load('example.pkl');
-  my $picklist = $parser->picklist;  # Gets a PickLE::Document object.
+  my $picklist = $parser->picklist;	 # Gets a PickLE::Document object.
 
 =head1 ATTRIBUTES
 
@@ -36,10 +37,10 @@ List of items to be picked in the form of an L<PickLE::Document> object.
 =cut
 
 has picklist => (
-	is      => 'ro',
-	lazy    => 1,
+	is		=> 'ro',
+	lazy	=> 1,
 	default => sub { [] },
-	writer  => '_set_picklist'
+	writer	=> '_set_picklist'
 );
 
 =back
@@ -90,9 +91,9 @@ attribute.
 sub _parse {
 	my ($self, $fh) = @_;
 	my $phases = {
-		empty      => 0,
+		empty	   => 0,
 		descriptor => 1,
-		refdes     => 2,
+		refdes	   => 2,
 	};
 	my $phase = $phases->{empty};
 	my $component = undef;
@@ -106,41 +107,13 @@ sub _parse {
 
 		# Check if we are about to parse a descriptor.
 		if ($phase == $phases->{empty}) {
-			if (substr($line, 0, 1) eq '') {
+			if (substr($line, 0, 1) eq '[') {
 				# Looks like we have to parse a descriptor line.
 				$phase = $phases->{descriptor};
 				$component = PickLE::Component->new;
 			} elsif ($line eq '') {
 				# Just another empty line...
 				next;
-			}
-		} elsif ($phase == $phases->{descriptor}) {
-			# Parse the descriptor line into a component.
-			if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
-				# Populate the component with required parameters.
-				$component->picked($+{picked} ne ' ');
-				$component->name($+{name});
-
-				# Component value.
-				if (exists $+{value}) {
-					$component->value($+{value});
-				}
-
-				# Component description.
-				if (exists $+{description}) {
-					$component->value($+{description});
-				}
-
-				# Component package.
-				if (exists $+{case}) {
-					$component->value($+{case});
-				}
-
-				# Move to the next phase.
-				$phase = $phases->{refdes};
-			} else {
-				# Looks like the descriptor line was malformed.
-				carp "Error parsing component descriptor '$line'";
 			}
 		} elsif ($phase == $phases->{refdes}) {
 			# Parse the reference designators.
@@ -153,6 +126,34 @@ sub _parse {
 			$component = undef;
 			$phase = $phases->{empty};
 			next;
+		}
+
+		# Parse the descriptor line into a component.
+		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
+			# Populate the component with required parameters.
+			$component->picked(($+{picked} ne ' ') ? 1 : 0);
+			$component->name($+{name});
+
+			# Component value.
+			if (exists $+{value}) {
+				$component->value($+{value});
+			}
+
+			# Component description.
+			if (exists $+{description}) {
+				$component->value($+{description});
+			}
+
+			# Component package.
+			if (exists $+{case}) {
+				$component->value($+{case});
+			}
+
+			# Move to the next phase.
+			$phase = $phases->{refdes};
+		} else {
+			# Looks like the descriptor line was malformed.
+			carp "Error parsing component descriptor '$line'";
 		}
 	}
 }
