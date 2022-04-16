@@ -12,7 +12,6 @@ use strict;
 use warnings;
 use autodie;
 use DDP;
-use Data::Dumper;
 
 # Include the project module directory.
 use FindBin;
@@ -23,11 +22,21 @@ use PickLE::Document;
 
 # Program's main entry point.
 sub main {
+	# Load a pick list document.
 	my $doc = PickLE::Document->load($ARGV[0]);
-	foreach my $component (@{$doc->components}) {
-		print Dumper($component);
-		#p $component;
-	}
+
+	# Go through categories listing the components in them.
+	$doc->foreach_category(sub {
+		my $category = shift;
+		print "$category:\n";
+
+		$doc->foreach_component({ category => $category }, sub {
+			my $component = shift;
+			print '    ' . $component->name . "\n";
+		});
+
+		print "\n";
+	});
 
 	return 0;
 }
