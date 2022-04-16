@@ -79,6 +79,17 @@ has case => (
 	predicate => 'has_case'
 );
 
+=item I<category>
+
+The category a component is part of. This is used in order to help the user find
+the component in their parts bins, since they are usually categorized.
+
+=cut
+
+has category => (
+	is => 'rw'
+);
+
 =item I<refdes>
 
 A B<list reference> of reference designators for this component. This is
@@ -99,12 +110,12 @@ has refdes => (
 =over 4
 
 =item I<$comp> = C<PickLE::Component>->C<new>([I<picked>, I<name>, I<value>,
-I<description>, I<case>, I<refdes>])
+I<description>, I<case>, I<category>, I<refdes>])
 
 Initializes a component object with a I<name>, the reference designator list
 (I<refdes>), if the component has been I<picked>, a I<value> in cases where it
-is applicable, a brief I<description> if you see fit, and an component package
-(I<case>).
+is applicable, a brief I<description> if you see fit, the I<category> of
+components that it is part of, and an component package (I<case>).
 
 =item I<$comp>->C<add_refdes>(I<@refdes>)
 

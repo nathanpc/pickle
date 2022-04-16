@@ -129,7 +129,7 @@ sub _parse {
 		}
 
 		# Parse the descriptor line into a component.
-		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
+		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?({(?<category>[^}]+)}\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
 			# Populate the component with required parameters.
 			$component->picked(($+{picked} ne ' ') ? 1 : 0);
 			$component->name($+{name});
@@ -137,6 +137,11 @@ sub _parse {
 			# Component value.
 			if (exists $+{value}) {
 				$component->value($+{value});
+			}
+
+			# Component category.
+			if (exists $+{category}) {
+				$component->category($+{category});
 			}
 
 			# Component description.
