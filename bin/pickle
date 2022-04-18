@@ -20,24 +20,56 @@ use File::Spec;
 use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
 
 use PickLE::Document;
+use PickLE::Converter::EagleBOM;
 
-# Program's main entry point.
+=head1 METHODS
+
+=over 4
+
+=item main
+
+Program's main entry point.
+
+=cut
+
 sub main {
 	# Enable UTF-8 output.
 	binmode STDOUT, ":encoding(utf8)";
 
-	# Load a pick list document.
-	my $doc = PickLE::Document->load($ARGV[0]);
+	my $ARGC = scalar @ARGV;
+	if ($ARGC == 0) {
+		die "No arguments were supplied.";
+	} elsif ($ARGC == 1) {
+		# Load a pick list document and print it.
+		my $doc = PickLE::Document->load($ARGV[0]);
+		print_document($doc);
+	} elsif ($ARGC == 2) {
+		# Convert Eagle BOM into pick list.
+		my $bom = PickLE::Converter::EagleBOM->load($ARGV[0]);
+		print_document($bom->document);
+	}
+
+	return 0;
+}
+
+=item print_document(I<$document>)
+
+Prints the contents of a L<PickLE::Document> in a pretty way.
+
+=cut
+
+sub print_document {
+	my ($document) = @_;
 
 	# Go through categories listing the components in them.
-	$doc->foreach_category(sub {
+	$document->foreach_category(sub {
 		my $category = shift;
 		print "$category:\n";
 
-		$doc->foreach_component({ category => $category }, sub {
+		$document->foreach_component({ category => $category }, sub {
 			my $component = shift;
 
-			# TODO: Make sure this is tabulated instead of just using TABs.
+			# TODO: Make this output like tree.
 			print '  ';
 			print (($component->picked) ? "\x{2611}" : "\x{2610}");
 			print ' ' . $component->quantity . "\t";
@@ -49,11 +81,12 @@ sub main {
 
 		print "\n";
 	});
-
-	return 0;
 }
 
+# Start the program.
 main();
+
+=back
 
 =head1 AUTHOR
 
