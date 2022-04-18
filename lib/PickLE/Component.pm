@@ -99,8 +99,10 @@ components to be picked.
 =cut
 
 has refdes => (
-	is      => 'rw',
-	default => sub { [] }
+	is      => 'ro',
+	lazy    => 1,
+	default => sub { [] },
+	writer  => '_set_refdes'
 );
 
 =back
