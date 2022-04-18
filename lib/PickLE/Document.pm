@@ -226,7 +226,7 @@ sub save {
 	# Write object to file.
 	open my $fh, '>:encoding(UTF-8)', $filename;
 	foreach my $component (@{$self->components}) {
-		print $fh, $component->as_string . "\n";
+		print $fh $component->as_string . "\n";
 	}
 	close $fh;
 }

@@ -153,14 +153,14 @@ sub as_string {
 	my $str = '';
 
 	# First line.
-	$str .= '[' . (($self->picked) ? 'X' : ' ') . ']\t' . $self->quantity .
-		'\t' . $self->name;
+	$str .= '[' . (($self->picked) ? 'X' : ' ') . "]\t" . $self->quantity .
+		"\t" . $self->name;
 	if (!defined($self->case)) {
-		$str .= '\t[' . $self->case . ']';
+		$str .= "\t[" . $self->case . ']';
 	}
 
 	# Reference designators.
-	$str .= '\n';
+	$str .= "\n";
 	foreach my $refdes (@{$self->refdes}) {
 		$str .= "$refdes ";
 	}
