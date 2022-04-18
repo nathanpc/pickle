@@ -12,7 +12,8 @@ use strict;
 use warnings;
 use autodie;
 use utf8;
-use DDP;
+use Getopt::Long qw(GetOptions);
+Getopt::Long::Configure qw(gnu_getopt);
 
 # Include the project module directory.
 use FindBin;
@@ -36,18 +37,46 @@ sub main {
 	# Enable UTF-8 output.
 	binmode STDOUT, ":encoding(utf8)";
 
+	# Variables for the command-line arguments.
+	my $arg_convert = undef;
+
+	# Get the command-line options.
+	GetOptions(
+		'convert|c=s', \$arg_convert
+	) or die "No arguments were supplied.";
 	my $ARGC = scalar @ARGV;
-	if ($ARGC == 0) {
-		die "No arguments were supplied.";
-	} elsif ($ARGC == 1) {
-		# Load a pick list document and print it.
-		my $doc = PickLE::Document->load($ARGV[0]);
-		print_document($doc);
-	} elsif ($ARGC == 2) {
-		# Convert Eagle BOM into pick list.
-		my $bom = PickLE::Converter::EagleBOM->load($ARGV[0]);
-		print_document($bom->document);
+
+	# Decide what to do with our arguments.
+	if (defined $arg_convert) {
+		# We are converting...
+		if (($ARGC > 2) or ($ARGC == 0)) {
+			die "Wrong number of arguments supplied to convert.\n";
+		}
+
+		my $inputfile = shift @ARGV;
+		my $outputfile = shift @ARGV;
+
+		if (lc($arg_convert) eq 'eagle') {
+			my $bom = PickLE::Converter::EagleBOM->load($inputfile);
+
+			# User just wants to print it out.
+			if (not defined $outputfile) {
+				print_document($bom->document);
+				return 0;
+			}
+
+			# Export converted BOM.
+			$bom->document->save($outputfile);
+			return 0;
+		} else {
+			# Unknown type to convert.
+			die "Unknown type of conversion to perform.\n";
+		}
 	}
+
+	# Load a pick list document and print it.
+	my $doc = PickLE::Document->load($ARGV[0]);
+	print_document($doc);
 
 	return 0;
 }
