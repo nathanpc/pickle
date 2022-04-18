@@ -155,7 +155,24 @@ sub as_string {
 	# First line.
 	$str .= '[' . (($self->picked) ? 'X' : ' ') . "]\t" . $self->quantity .
 		"\t" . $self->name;
-	if (!defined($self->case)) {
+
+	# Component value.
+	if ($self->_attr_available($self->value)) {
+		$str .= "\t(" . $self->value . ')';
+	}
+
+	# Component category.
+	if ($self->_attr_available($self->category)) {
+		$str .= "\t{" . $self->category . '}';
+	}
+
+	# Component description.
+	if ($self->_attr_available($self->description)) {
+		$str .= "\t\"" . $self->description . "\"";
+	}
+
+	# Component package.
+	if ($self->_attr_available($self->case)) {
 		$str .= "\t[" . $self->case . ']';
 	}
 
@@ -168,6 +185,24 @@ sub as_string {
 	# Remove any trailling whitespace and return.
 	$str =~ s/\s+$//;
 	return $str;
+}
+
+=back
+
+=head1 PRIVATE METHODS
+
+=over 4
+
+=item I<$available> = I<$self>->C<_attr_available>(I<$attribute>)
+
+Checks if an I<$attribute> is defined and isn't an empty string.
+
+=cut
+
+sub _attr_available {
+	my ($self, $attribute) = @_;
+
+	return ((defined $attribute) and ($attribute ne ''));
 }
 
 1;
