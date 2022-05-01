@@ -142,6 +142,26 @@ sub quantity {
 	return scalar @{$self->refdes};
 }
 
+=item I<$str> = I<$comp>->C<refdes_string>()
+
+Gets the list of reference designators seoarated by spaces as a string.
+
+=cut
+
+sub refdes_string {
+	my ($self) = @_;
+	my $str = '';
+
+	# Go through reference designators building up a string.
+	foreach my $refdes (@{$self->refdes}) {
+		$str .= "$refdes ";
+	}
+
+	# Remove any trailling whitespace and return.
+	$str =~ s/\s+$//;
+	return $str;
+}
+
 =item I<$str> = I<$comp>->C<as_string>()
 
 Gets the string representation of this object.
@@ -173,9 +193,7 @@ sub as_string {
 
 	# Reference designators.
 	$str .= "\n";
-	foreach my $refdes (@{$self->refdes}) {
-		$str .= "$refdes ";
-	}
+	$str .= $self->refdes_string;
 
 	# Remove any trailling whitespace and return.
 	$str =~ s/\s+$//;
