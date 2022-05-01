@@ -59,7 +59,8 @@ sub main {
 		}
 
 		my $inputfile = shift @ARGV;
-		if (lc($arg_import) eq 'eagle') {
+		$arg_import = lc($arg_import);
+		if ($arg_import eq 'eagle') {
 			# Eagle CAD.
 			my $bom = PickLE::Converter::EagleBOM->load($inputfile);
 			$document = $bom->document;
@@ -82,13 +83,26 @@ sub main {
 	}
 
 	# Are we supposed to be exporting something?
+	$ARGC = scalar @ARGV;
 	if (defined $arg_export) {
 		if (not defined $document) {
 			die "A document must be loaded in order to be exported.\n";
 		}
 
-		# Export document.
-		$document->save($arg_export);
+		if ($ARGC == 0) {
+			die "Wrong number of arguments supplied to export.\n";
+		}
+
+		my $outputfile = shift @ARGV;
+		$arg_export = lc($arg_export);
+		if ($arg_export eq 'pickle') {
+			# Regular PickLE document.
+			$document->save($outputfile);
+		} else {
+			# Unknown type to export.
+			die "Unknown type of file to be exported.\n";
+		}
+
 		return 0;
 	}
 
