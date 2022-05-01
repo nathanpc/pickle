@@ -22,12 +22,13 @@ use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
 
 use PickLE::Document;
 use PickLE::Converter::EagleBOM;
+use PickLE::Exporter::HTML;
 
 =head1 METHODS
 
 =over 4
 
-=item main
+=item C<main>()
 
 Program's main entry point.
 
@@ -98,6 +99,9 @@ sub main {
 		if ($arg_export eq 'pickle') {
 			# Regular PickLE document.
 			$document->save($outputfile);
+		} elsif ($arg_export eq 'html') {
+			# HTML
+			export_file($outputfile, PickLE::Exporter::HTML->as_string($document));
 		} else {
 			# Unknown type to export.
 			die "Unknown type of file to be exported.\n";
@@ -111,7 +115,7 @@ sub main {
 	return 0;
 }
 
-=item print_document(I<$document>)
+=item C<print_document>(I<$document>)
 
 Prints the contents of a L<PickLE::Document> in a pretty way.
 
@@ -140,6 +144,20 @@ sub print_document {
 
 		print "\n";
 	});
+}
+
+=item C<export_file>(I<$filename>, I<$contents>)
+
+Saves the I<$contents> to a file with I<$filename>.
+
+=cut
+
+sub export_file {
+	my ($filename, $contents) = @_;
+
+	open my $fh, '>:encoding(UTF-8)', $filename;
+	print $fh $contents;
+	close $fh;
 }
 
 # Start the program.
