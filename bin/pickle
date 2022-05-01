@@ -37,47 +37,63 @@ sub main {
 	# Enable UTF-8 output.
 	binmode STDOUT, ":encoding(utf8)";
 
+	# Some global-ish variables.
+	my $document = undef;
+
 	# Variables for the command-line arguments.
-	my $arg_convert = undef;
+	my $arg_import = undef;
+	my $arg_export = undef;
 
 	# Get the command-line options.
 	GetOptions(
-		'convert|c=s', \$arg_convert
+		'import|i=s' => \$arg_import,
+		'export|x=s' => \$arg_export,
 	) or die "No arguments were supplied.";
 	my $ARGC = scalar @ARGV;
 
-	# Decide what to do with our arguments.
-	if (defined $arg_convert) {
-		# We are converting...
-		if (($ARGC > 2) or ($ARGC == 0)) {
-			die "Wrong number of arguments supplied to convert.\n";
+	# Are we importing some file?
+	if (defined $arg_import) {
+		# We are importing...
+		if ($ARGC == 0) {
+			die "Wrong number of arguments supplied to import.\n";
 		}
 
 		my $inputfile = shift @ARGV;
-		my $outputfile = shift @ARGV;
-
-		if (lc($arg_convert) eq 'eagle') {
+		if (lc($arg_import) eq 'eagle') {
+			# Eagle CAD.
 			my $bom = PickLE::Converter::EagleBOM->load($inputfile);
-
-			# User just wants to print it out.
-			if (not defined $outputfile) {
-				print_document($bom->document);
-				return 0;
-			}
-
-			# Export converted BOM.
-			$bom->document->save($outputfile);
-			return 0;
+			$document = $bom->document;
 		} else {
-			# Unknown type to convert.
-			die "Unknown type of conversion to perform.\n";
+			# Unknown type to import.
+			die "Unknown type of file to be imported.\n";
 		}
 	}
 
-	# Load a pick list document and print it.
-	my $doc = PickLE::Document->load($ARGV[0]);
-	print_document($doc);
+	# Load a pick list document.
+	$ARGC = scalar @ARGV;
+	if (not defined $document) {
+		if ($ARGC == 0) {
+			die "Wrong number of arguments supplied to read document.\n";
+		}
 
+		# Read the pick list file.
+		my $inputfile = pop @ARGV;
+		$document = PickLE::Document->load($inputfile);
+	}
+
+	# Are we supposed to be exporting something?
+	if (defined $arg_export) {
+		if (not defined $document) {
+			die "A document must be loaded in order to be exported.\n";
+		}
+
+		# Export document.
+		$document->save($arg_export);
+		return 0;
+	}
+
+	# If there's nothing left to do, let's just print the document contents.
+	print_document($document);
 	return 0;
 }
 
