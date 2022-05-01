@@ -97,6 +97,7 @@ sub _parse {
 	};
 	my $phase = $phases->{empty};
 	my $component = undef;
+	my $category = undef;
 
 	# Initialize a brand new pick list document.
 	$self->_set_picklist(PickLE::Document->new);
@@ -111,6 +112,10 @@ sub _parse {
 				# Looks like we have to parse a descriptor line.
 				$phase = $phases->{descriptor};
 				$component = PickLE::Component->new;
+			} elsif (substr($line, -1, 1) eq ':') {
+				# Got a category line.
+				$category = substr($line, 0, -1);
+				next;
 			} elsif ($line eq '') {
 				# Just another empty line...
 				next;
@@ -129,19 +134,15 @@ sub _parse {
 		}
 
 		# Parse the descriptor line into a component.
-		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?({(?<category>[^}]+)}\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
+		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
 			# Populate the component with required parameters.
 			$component->picked(($+{picked} ne ' ') ? 1 : 0);
 			$component->name($+{name});
+			$component->category($category);
 
 			# Component value.
 			if (exists $+{value}) {
 				$component->value($+{value});
-			}
-
-			# Component category.
-			if (exists $+{category}) {
-				$component->category($+{category});
 			}
 
 			# Component description.

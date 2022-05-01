@@ -161,11 +161,6 @@ sub as_string {
 		$str .= "\t(" . $self->value . ')';
 	}
 
-	# Component category.
-	if ($self->_attr_available($self->category)) {
-		$str .= "\t{" . $self->category . '}';
-	}
-
 	# Component description.
 	if ($self->_attr_available($self->description)) {
 		$str .= "\t\"" . $self->description . "\"";

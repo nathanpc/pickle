@@ -225,9 +225,15 @@ sub save {
 
 	# Write object to file.
 	open my $fh, '>:encoding(UTF-8)', $filename;
-	foreach my $component (@{$self->components}) {
-		print $fh $component->as_string . "\n";
-	}
+	$self->foreach_category(sub {
+		my $category = shift;
+		print $fh "$category:\n";
+
+		$self->foreach_component({ category => $category }, sub {
+			my $component = shift;
+			print $fh $component->as_string . "\n\n";
+		});
+	});
 	close $fh;
 }
 
