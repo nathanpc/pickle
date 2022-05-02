@@ -49,7 +49,10 @@ sub as_string {
 		$html->dataElement('h2', $category);
 
 		# Start creating the table.
-		$html->startTag('table');
+		$html->startTag('table',
+						border => '1',
+						cellpadding => '2',
+						cellspacing => '1');
 		$html->startTag('tr');
 		$html->dataElement('th', '#');
 		$html->dataElement('th', 'Qnt.');
@@ -66,13 +69,21 @@ sub as_string {
 
 			# Add a component to the table.
 			$html->startTag('tr');
-			$html->dataElement('td', ($component->picked) ? 'X' : ' ');
-			$html->dataElement('td', $component->quantity);
-			$html->dataElement('td', $component->name);
-			$html->dataElement('td', $component->value);
+			$html->startTag('td', align => 'center');
+			if ($component->picked) {
+				$html->emptyTag('input',
+								type => 'checkbox',
+								checked => 'checked');
+			} else {
+				$html->emptyTag('input', type => 'checkbox');
+			}
+			$html->endTag('td');
+			$html->dataElement('td', $component->quantity, align => 'center');
+			$html->dataElement('td', $component->name, align => 'center');
+			$html->dataElement('td', $component->value, align => 'center');
 			$html->dataElement('td', $component->refdes_string);
-			$html->dataElement('td', $component->description);
-			$html->dataElement('td', $component->case);
+			$html->dataElement('td', $component->description, align => 'center');
+			$html->dataElement('td', $component->case, align => 'center');
 			$html->endTag('tr');
 		});
 
