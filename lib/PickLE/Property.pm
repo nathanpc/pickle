@@ -10,6 +10,7 @@ package PickLE::Property;
 
 use strict;
 use warnings;
+use Carp;
 use Moo;
 
 =head1 ATTRIBUTES
