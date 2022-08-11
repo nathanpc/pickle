@@ -1,0 +1,22 @@
+# Misc.
+LICENSE
+README.pod
+#examples/
+
+# local::lib
+vendor/
+
+# Editors
+**/.vscode
+
+# Git
+**/.git/
+**/.git*
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Garbage
+**/.DS_Store
