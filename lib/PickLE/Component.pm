@@ -121,6 +121,66 @@ Initializes a component object with a I<name>, the reference designator list
 is applicable, a brief I<description> if you see fit, the I<category> of
 components that it is part of, and an component package (I<case>).
 
+=item I<$comp> = C<PickLE::Component>->C<from_line>(I<$line>)
+
+Initializes a pick list component object by parsing a descriptor I<$line> from a
+document. Will return C<undef> if we couldn't parse a component from the given
+line.
+
+This method can also be called as I<$comp>->C<from_line> and it'll override just
+the attributes of the object.
+
+=cut
+
+sub from_line {
+	my ($self, $line, $category) = @_;
+	$self = $self->new() unless ref $self;
+
+	# Try to parse the component descriptor line.
+	if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
+		# Populate the component with required parameters.
+		$self->picked(($+{picked} ne ' ') ? 1 : 0);
+		$self->name($+{name});
+		$self->category($category);
+
+		# Component value.
+		if (exists $+{value}) {
+			$self->value($+{value});
+		}
+
+		# Component description.
+		if (exists $+{description}) {
+			$self->description($+{description});
+		}
+
+		# Component package.
+		if (exists $+{case}) {
+			$self->case($+{case});
+		}
+
+		return $self;
+	}
+
+	# Looks like the component descriptor line couldn't be parsed.
+	return undef;
+}
+
+=item I<$comp>->C<parse_refdes_line>(I<$line>)
+
+Parses the reference designator line in a document and populates the I<refdes>
+list with them.
+
+=cut
+
+sub parse_refdes_line {
+	my ($self, $line) = @_;
+
+	# Append the reference designators.
+	if (substr($line, 0, 1) ne '') {
+		$self->add_refdes(split /\s+/, $line);
+	}
+}
+
 =item I<$comp>->C<add_refdes>(I<@refdes>)
 
 Adds any number of reference designators to the reference designator list.

@@ -114,7 +114,6 @@ sub _parse {
 			if (substr($line, 0, 1) eq '[') {
 				# Looks like we have to parse a descriptor line.
 				$phase = $phases->{descriptor};
-				$component = PickLE::Component->new;
 			} elsif (substr($line, -1, 1) eq ':') {
 				# Got a category line.
 				$category = substr($line, 0, -1);
@@ -125,9 +124,7 @@ sub _parse {
 			}
 		} elsif ($phase == $phases->{refdes}) {
 			# Parse the reference designators.
-			if (substr($line, 0, 1) ne '') {
-				$component->add_refdes(split ' ', $line);
-			}
+			$component->parse_refdes_line($line);
 
 			# Append the component to the pick list and go to the next line.
 			$self->picklist->add_component($component);
@@ -159,30 +156,9 @@ sub _parse {
 		}
 
 		# Parse the descriptor line into a component.
-		if ($line =~ /\[(?<picked>.)\]\s+(?<quantity>\d+)\s+(?<name>[^\s]+)\s*(\((?<value>[^\)]+)\)\s*)?("(?<description>[^"]+)"\s*)?(\[(?<case>[^\]]+)\]\s*)?/) {
-			# Populate the component with required parameters.
-			$component->picked(($+{picked} ne ' ') ? 1 : 0);
-			$component->name($+{name});
-			$component->category($category);
-
-			# Component value.
-			if (exists $+{value}) {
-				$component->value($+{value});
-			}
-
-			# Component description.
-			if (exists $+{description}) {
-				$component->description($+{description});
-			}
-
-			# Component package.
-			if (exists $+{case}) {
-				$component->case($+{case});
-			}
-
-			# Move to the next phase.
-			$phase = $phases->{refdes};
-		} else {
+		$component = PickLE::Component->from_line($line, $category);
+		$phase = $phases->{refdes};
+		if (not defined $component) {
 			# Looks like the descriptor line was malformed.
 			carp "Error parsing component descriptor '$line'";
 			$status = 0;
