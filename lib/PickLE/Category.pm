@@ -10,6 +10,7 @@ package PickLE::Category;
 
 use strict;
 use warnings;
+use Carp;
 use Moo;
 
 =head1 ATTRIBUTES
@@ -114,12 +115,21 @@ sub foreach_component {
 =item I<$str> = I<$category>->C<as_string>()
 
 Gets the string representation of this object. Won't include any of the
-associated components.
+associated components and will return an empty string if a I<name> isn't
+defined.
 
 =cut
 
 sub as_string {
 	my ($self) = @_;
+
+	# Check if we have a name.
+	if (not defined $self->name) {
+		carp "Category can't be represented because the name is not defined";
+		return '';
+	}
+
+	# Properly populated category.
 	return $self->name . ':';
 }
 

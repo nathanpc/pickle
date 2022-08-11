@@ -10,6 +10,7 @@ package PickLE::Component;
 
 use strict;
 use warnings;
+use Carp;
 use Moo;
 
 =head1 ATTRIBUTES
@@ -224,6 +225,12 @@ Gets the string representation of this object.
 sub as_string {
 	my ($self) = @_;
 	my $str = '';
+
+	# Make sure we have a name.
+	if (not $self->_attr_available($self->name)) {
+		carp "Component can't be represented because no name has been defined";
+		return '';
+	}
 
 	# First line.
 	$str .= '[' . (($self->picked) ? 'X' : ' ') . "]\t" . $self->quantity .

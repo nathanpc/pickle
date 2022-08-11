@@ -10,7 +10,7 @@ my $comp = new_ok('PickLE::Component');
 
 # Picked
 is $comp->picked, 0, 'picked initialized at 0';
-like $comp->as_string, qr/\[ \]\s+0/, 'as_string is very empty';
+ok $comp->as_string eq '', 'as_string is very empty';
 $comp->picked(1);
 is $comp->picked, 1, 'picked now set to 1';
 like $comp->as_string, qr/\[X\]\s+0/, 'as_string now checked';
