@@ -69,7 +69,7 @@ sub load {
 
 	# Parse the file.
 	open my $fh, '<:encoding(UTF-8)', $filename;
-	$self->_parse($fh);
+	$self->_parse($fh) or return undef;
 	close $fh;
 
 	return $self;
@@ -81,15 +81,16 @@ sub load {
 
 =over 4
 
-=item I<$self>->C<_parse>(I<$fh>)
+=item I<$status> = I<$self>->C<_parse>(I<$fh>)
 
 Parses the contents of a file handle (I<$fh>) and populates the I<picklist>
-attribute.
+attribute. Returns C<0> if there were parsing errors.
 
 =cut
 
 sub _parse {
 	my ($self, $fh) = @_;
+	my $status = 1;
 	my $phases = {
 		empty	   => 0,
 		descriptor => 1,
@@ -160,8 +161,11 @@ sub _parse {
 		} else {
 			# Looks like the descriptor line was malformed.
 			carp "Error parsing component descriptor '$line'";
+			$status = 0;
 		}
 	}
+
+	return $status;
 }
 
 =back
