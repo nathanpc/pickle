@@ -15,6 +15,8 @@ use Moo;
 use Text::CSV;
 
 use PickLE::Document;
+use PickLE::Property;
+use PickLE::Category;
 use PickLE::Component;
 
 =head1 ATTRIBUTES
@@ -57,23 +59,44 @@ sub load {
 		auto_diag => 2
 	});
 
-	# Open the CSV file to be parsed.
+	# Create a basic document with the required properties.
 	$self->_set_document(PickLE::Document->new);
-	open my $fh, "<:encoding(UTF-8)", $csvfile;
-	$csv->getline($fh);                           # Dicard row with headers.
-	while (my $row = $csv->getline($fh)) {
-		my $component = PickLE::Component->new;
+	$self->document->add_property(PickLE::Property->new(
+		name  => 'Name',
+		value =>'Eagle Imported File'
+	));
+	$self->document->add_property(PickLE::Property->new(
+		name  => 'Revision',
+		value => 'A'
+	));
+	$self->document->add_property(PickLE::Property->new(
+		name  => 'Description',
+		value => 'A very descriptive description.'
+	));
 
-		# Get the easy ones out of the way.
+	# Open the CSV file to be parsed and dicard the row with the headers.
+	open my $fh, "<:encoding(UTF-8)", $csvfile;
+	$csv->getline($fh);
+
+	# Go through each line parsing the components.
+	while (my $row = $csv->getline($fh)) {
+		# Do we need to create a new category?
+		my $category = $self->document->has_category($row->[5]);
+		if (not defined $category) {
+			$category = PickLE::Category->new(name => $row->[5]);
+			$self->document->add_category($category);
+		}
+
+		# Create and populate our component object.
+		my $component = PickLE::Component->new;
 		$component->name($row->[2]);
 		$component->value($row->[1]) if ($row->[1] ne $row->[2]);
 		$component->description($row->[5]);
 		$component->case($row->[3]);
-		$component->category($row->[5]);
 		$component->add_refdes(split /, /, $row->[4]);
 
-		# Append the parsed component to our converted document.
-		$self->document->add_component($component);
+		# Append the parsed component to its category.
+		$category->add_component($component);
     }
 	close $fh;
 

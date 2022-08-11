@@ -170,6 +170,28 @@ sub foreach_category {
 	}
 }
 
+=item I<$category> = I<$self>->C<has_category>(I<$name>)
+
+Checks to see if there's already a category with the I<$name> in the document
+and returns it if found, otherwise returns C<undef>.
+
+=cut
+
+sub has_category {
+	my ($self, $name) = @_;
+	my $found = undef;
+
+	# Go through the categories checking their names for a match.
+	$self->foreach_category(sub {
+		my $category = shift;
+		if ($category->name eq $name) {
+			$found = $category;
+		}
+	});
+
+	return $found;
+}
+
 =item I<$doc>->C<save>(I<$filename>)
 
 Saves the document object to a file.
