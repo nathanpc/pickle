@@ -65,7 +65,7 @@ sub from_line {
 	$self = $self->new() unless ref $self;
 
 	# Try to parse the property line.
-	if ($line =~ /(?<name>[A-Za-z0-9\-]+):\s+(?<value>.+)/) {
+	if ($line =~ /(?<name>[A-Za-z0-9 \-]+):\s+(?<value>.+)/) {
 		# Populate our object.
 		$self->name($+{name});
 		$self->value($+{value});
