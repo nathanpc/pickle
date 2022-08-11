@@ -80,7 +80,7 @@ sub from_line {
 	return undef;
 }
 
-=item I<$doc>->C<add_component>(I<@component>)
+=item I<$category>->C<add_component>(I<@component>)
 
 Adds any number of components in the form of L<PickLE::Component> objects to the
 category.
