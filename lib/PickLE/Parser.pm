@@ -16,6 +16,7 @@ use Moo;
 use Carp;
 
 use PickLE::Property;
+use PickLE::Category;
 use PickLE::Component;
 use PickLE::Document;
 
@@ -116,7 +117,19 @@ sub _parse {
 				$phase = $phases->{descriptor};
 			} elsif (substr($line, -1, 1) eq ':') {
 				# Got a category line.
-				$category = substr($line, 0, -1);
+				if (defined $category) {
+					# Append the last category we parsed to the list.
+					$self->picklist->add_category($category);
+				}
+
+				# Parse the new category.
+				$category = PickLE::Category->from_line($line);
+				if (not defined $category) {
+					# Looks like the category line was malformed.
+					carp "Error parsing category '$line'";
+					$status = 0;
+				}
+
 				next;
 			} elsif ($line eq '') {
 				# Just another empty line...
@@ -127,7 +140,7 @@ sub _parse {
 			$component->parse_refdes_line($line);
 
 			# Append the component to the pick list and go to the next line.
-			$self->picklist->add_component($component);
+			$category->add_component($component);
 			$component = undef;
 			$phase = $phases->{empty};
 			next;
@@ -156,7 +169,7 @@ sub _parse {
 		}
 
 		# Parse the descriptor line into a component.
-		$component = PickLE::Component->from_line($line, $category);
+		$component = PickLE::Component->from_line($line);
 		$phase = $phases->{refdes};
 		if (not defined $component) {
 			# Looks like the descriptor line was malformed.
@@ -165,16 +178,20 @@ sub _parse {
 		}
 	}
 
+	# Make sure we get that last category.
+	if (defined $category) {
+		# Append the last category we parsed to the list.
+		$self->picklist->add_category($category);
+	}
+
 	return $status;
 }
-
-=back
-
-=cut
 
 1;
 
 __END__
+
+=back
 
 =head1 AUTHOR
 

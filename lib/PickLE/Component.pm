@@ -81,17 +81,6 @@ has case => (
 	predicate => 1
 );
 
-=item I<category>
-
-The category a component is part of. This is used in order to help the user find
-the component in their parts bins, since they are usually categorized.
-
-=cut
-
-has category => (
-	is => 'rw'
-);
-
 =item I<refdes>
 
 A B<list reference> of reference designators for this component. This is
@@ -114,20 +103,20 @@ has refdes => (
 =over 4
 
 =item I<$comp> = C<PickLE::Component>->C<new>([I<picked>, I<name>, I<value>,
-I<description>, I<case>, I<category>, I<refdes>])
+I<description>, I<case>, I<refdes>])
 
 Initializes a component object with a I<name>, the reference designator list
 (I<refdes>), if the component has been I<picked>, a I<value> in cases where it
-is applicable, a brief I<description> if you see fit, the I<category> of
-components that it is part of, and an component package (I<case>).
+is applicable, a brief I<description> if you see fit, and an component package
+(I<case>).
 
 =item I<$comp> = C<PickLE::Component>->C<from_line>(I<$line>)
 
 =item I<$comp> = I<$comp>->C<from_line>(I<$line>)
 
-This method can be called statically, in which it will initialize a pick list
-brand new component object or in object context in which it'll override just
-the attributes of the object and leave the instance intact.
+This method can be called statically, in which it will initialize a brand new
+component object, or in object context in which it'll override just the
+attributes of the object and leave the instance intact.
 
 In both variants it'll parse a component descriptor I<$line> and populate the
 component object. Will return C<undef> if we couldn't parse a component from the
@@ -136,7 +125,7 @@ given line.
 =cut
 
 sub from_line {
-	my ($self, $line, $category) = @_;
+	my ($self, $line) = @_;
 	$self = $self->new() unless ref $self;
 
 	# Try to parse the component descriptor line.
@@ -144,7 +133,6 @@ sub from_line {
 		# Populate the component with required parameters.
 		$self->picked(($+{picked} ne ' ') ? 1 : 0);
 		$self->name($+{name});
-		$self->category($category);
 
 		# Component value.
 		if (exists $+{value}) {

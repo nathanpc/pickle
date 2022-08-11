@@ -134,9 +134,9 @@ sub print_document {
 	# Go through categories listing the components in them.
 	$document->foreach_category(sub {
 		my $category = shift;
-		print "$category:\n";
+		print $category->name . ":\n";
 
-		$document->foreach_component({ category => $category }, sub {
+		$category->foreach_component(sub {
 			my $component = shift;
 
 			# TODO: Make this output like tree.
