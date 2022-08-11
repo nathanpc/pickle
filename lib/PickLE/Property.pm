@@ -48,11 +48,15 @@ Initializes a pick list property object with a I<name> and I<value>.
 
 =item I<$prop> = C<PickLE::Property>->C<from_line>(I<$line>)
 
-Initializes a pick list property object by parsing a I<$line> from a document.
-Will return C<undef> if we couldn't parse a property from the given line.
+=item I<$prop> = I<$prop>->C<from_line>(I<$line>)
 
-This method can also be called as I<$prop>->C<from_line> and it'll override just
-the I<name> and I<value> of the object.
+This method can be called statically, in which it will initialize a pick list
+brand new property object or in object context in which it'll override just
+the attributes of the object and leave the instance intact.
+
+In both variants it'll parse a property I<$line> from a document and populate
+the object. Will return C<undef> if we couldn't parse a property from the given
+line.
 
 =cut
 

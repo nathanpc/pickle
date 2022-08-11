@@ -123,12 +123,15 @@ components that it is part of, and an component package (I<case>).
 
 =item I<$comp> = C<PickLE::Component>->C<from_line>(I<$line>)
 
-Initializes a pick list component object by parsing a descriptor I<$line> from a
-document. Will return C<undef> if we couldn't parse a component from the given
-line.
+=item I<$comp> = I<$comp>->C<from_line>(I<$line>)
 
-This method can also be called as I<$comp>->C<from_line> and it'll override just
-the attributes of the object.
+This method can be called statically, in which it will initialize a pick list
+brand new component object or in object context in which it'll override just
+the attributes of the object and leave the instance intact.
+
+In both variants it'll parse a component descriptor I<$line> and populate the
+component object. Will return C<undef> if we couldn't parse a component from the
+given line.
 
 =cut
 
