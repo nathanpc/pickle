@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More skip_all => 'first need to fix previous tests';# tests => 4;
+use Test::More tests => 4;
 
 BEGIN { use_ok('PickLE::Parser'); }
 
