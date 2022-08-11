@@ -2,25 +2,25 @@
 
 use strict;
 use warnings;
-use Test::More tests => 37;
+use Test::More tests => 36;
 
 BEGIN { use_ok('PickLE::Component'); }
 
+# Blank start.
 my $comp = new_ok('PickLE::Component');
-
-# Picked
-is $comp->picked, 0, 'picked initialized at 0';
-ok $comp->as_string eq '', 'as_string is very empty';
-$comp->picked(1);
-is $comp->picked, 1, 'picked now set to 1';
-like $comp->as_string, qr/\[X\]\s+0/, 'as_string now checked';
+ok $comp->as_string eq '', 'as_string is empty for a blank object';
 
 # Name
 is $comp->name, '', 'name initialized as empty string';
-like $comp->as_string, qr/\[X\]\s+0/, 'as_string remains unchanged';
 $comp->name('Test Name');
 is $comp->name, 'Test Name', 'name now set to "Test Name"';
-like $comp->as_string, qr/\[X\]\s+0\s+Test Name/, 'as_string now contains name';
+like $comp->as_string, qr/\[ \]\s+0\s+Test Name/, 'as_string now contains name';
+
+# Picked
+is $comp->picked, 0, 'picked initialized at 0';
+$comp->picked(1);
+is $comp->picked, 1, 'picked now set to 1';
+like $comp->as_string, qr/\[X\]\s+0\s+Test Name/, 'as_string now checked';
 
 # Value
 is $comp->value, undef, 'value initialized as undefined';
