@@ -43,10 +43,20 @@ sub as_string {
 	$html->endTag('head');
 	$html->startTag('body');
 
-	# Start populating the page body.
+	# Go through properties.
+	$html->startTag('dl');
+	$document->foreach_property(sub {
+		my $property = shift;
+		
+		$html->dataElement('dt', $property->name);
+		$html->dataElement('dd', $property->value);
+	});
+	$html->endTag('dl');
+
+	# Go through categories.
 	$document->foreach_category(sub {
 		my $category = shift;
-		$html->dataElement('h2', $category);
+		$html->dataElement('h2', $category->name);
 
 		# Start creating the table.
 		$html->startTag('table',
@@ -64,7 +74,7 @@ sub as_string {
 		$html->endTag('tr');
 
 		# Go through components for the given category.
-		$document->foreach_component({ category => $category }, sub {
+		$category->foreach_component(sub {
 			my $component = shift;
 
 			# Add a component to the table.
