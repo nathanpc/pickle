@@ -86,6 +86,19 @@ has packages => (
 	writer  => '_set_packages'
 );
 
+=item I<properties>
+
+List of all of the pick list properties in the document.
+
+=cut
+
+has properties => (
+	is      => 'ro',
+	lazy    => 1,
+	default => sub { [] },
+	writer  => '_set_properties'
+);
+
 =back
 
 =head1 METHODS
@@ -136,10 +149,43 @@ sub add_component {
 	}
 }
 
+=item I<$doc>->C<add_property>(I<@property>)
+
+Adds any number of proprerties in the form of L<PickLE::Property> objects to the
+document.
+
+=cut
+
+sub add_property {
+	my $self = shift;
+
+	# Go through properties adding them to the properties list.
+	foreach my $property (@_) {
+		push @{$self->properties}, $property;
+	}
+}
+
+=item I<$doc>->C<foreach_property>(I<$coderef>)
+
+Executes a block of code (I<$coderef>) for each proprety. The property object
+will be passed as the first argument.
+
+=cut
+
+sub foreach_property {
+	my ($self, $coderef) = @_;
+
+	# Go through the properties.
+	foreach my $property (@{$self->properties}) {
+		# Call the coderef given by the caller.
+		$coderef->($property);
+	}
+}
+
 =item I<$doc>->C<foreach_component>([I<\%filter>,] I<$coderef>)
 
-Executes a block of code (I<$coderef>) for each component. Where the component
-object is passed as the first argument.
+Executes a block of code (I<$coderef>) for each component. The component object
+will be passed as the first argument.
 
 There's an optional I<\%filter> hash reference that can be passed with
 attributes I<category> and/or I<case> in order to only iterate through
@@ -225,15 +271,7 @@ sub save {
 
 	# Write object to file.
 	open my $fh, '>:encoding(UTF-8)', $filename;
-	$self->foreach_category(sub {
-		my $category = shift;
-		print $fh "$category:\n";
-
-		$self->foreach_component({ category => $category }, sub {
-			my $component = shift;
-			print $fh $component->as_string . "\n\n";
-		});
-	});
+	print $fh $self->as_string;
 	close $fh;
 }
 
@@ -247,10 +285,26 @@ sub as_string {
 	my ($self) = @_;
 	my $str = "";
 
-	# Go through components getting their string representations.
-	foreach my $component (@{$self->components}) {
-		$str .= $component->as_string . "\n";
-	}
+	# Go through properties getting their string representations.
+	$self->foreach_property(sub {
+		my $property = shift;
+		$str .= $property->as_string . "\n";
+	});
+
+	# Add the header section separator.
+	$str .= "\n---\n";
+
+	# Go through categories getting their string representations.
+	$self->foreach_category(sub {
+		my $category = shift;
+		$str .= "$category:\n";
+
+		# Go through components getting their string representations.
+		$self->foreach_component({ category => $category }, sub {
+			my $component = shift;
+			$str .= $component->as_string . "\n\n";
+		});
+	});
 
 	return $str;
 }

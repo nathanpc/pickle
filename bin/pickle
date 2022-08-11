@@ -124,6 +124,13 @@ Prints the contents of a L<PickLE::Document> in a pretty way.
 sub print_document {
 	my ($document) = @_;
 
+	# Go through properties.
+	$document->foreach_property(sub {
+		my $property = shift;
+		print $property->name . ":\t" . $property->value . "\n";
+	});
+	print "\n";
+
 	# Go through categories listing the components in them.
 	$document->foreach_category(sub {
 		my $category = shift;

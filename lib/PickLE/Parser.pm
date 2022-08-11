@@ -15,6 +15,7 @@ use autodie;
 use Moo;
 use Carp;
 
+use PickLE::Property;
 use PickLE::Component;
 use PickLE::Document;
 
@@ -93,10 +94,11 @@ sub _parse {
 	my $status = 1;
 	my $phases = {
 		empty	   => 0,
-		descriptor => 1,
-		refdes	   => 2,
+		property   => 1,
+		descriptor => 2,
+		refdes	   => 3,
 	};
-	my $phase = $phases->{empty};
+	my $phase = $phases->{property};
 	my $component = undef;
 	my $category = undef;
 
@@ -131,6 +133,28 @@ sub _parse {
 			$self->picklist->add_component($component);
 			$component = undef;
 			$phase = $phases->{empty};
+			next;
+		} elsif ($phase == $phases->{property}) {
+			# Looks like we are in the properties header.
+			if ($line eq '') {
+				# Just another empty line...
+				next;
+			} elsif ($line eq '---') {
+				# We've finished parsing the properties header.
+				$phase = $phases->{empty};
+				next;
+			}
+			
+			# Parse the property.
+			my $prop = PickLE::Property->from_line($line);
+			if (not defined $prop) {
+				# Looks like the property line was malformed.
+				carp "Error parsing property '$line'";
+				$status = 0;
+			}
+
+			# Append the property to the properties list of the document.
+			$self->picklist->add_property($prop);
 			next;
 		}
 
