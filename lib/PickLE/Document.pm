@@ -170,14 +170,36 @@ sub foreach_category {
 	}
 }
 
-=item I<$category> = I<$self>->C<has_category>(I<$name>)
+=item I<$property> = I<$self>->C<get_property>(I<$name>)
 
-Checks to see if there's already a category with the I<$name> in the document
-and returns it if found, otherwise returns C<undef>.
+Gets a property of the document by its I<$name> and returns it if found,
+otherwise returns C<undef>.
 
 =cut
 
-sub has_category {
+sub get_property {
+	my ($self, $name) = @_;
+	my $found = undef;
+
+	# Go through the properties checking their names for a match.
+	$self->foreach_property(sub {
+		my $property = shift;
+		if ($property->name eq $name) {
+			$found = $property;
+		}
+	});
+
+	return $found;
+}
+
+=item I<$category> = I<$self>->C<get_category>(I<$name>)
+
+Gets a category in the document by its I<$name> and returns it if found,
+otherwise returns C<undef>.
+
+=cut
+
+sub get_category {
 	my ($self, $name) = @_;
 	my $found = undef;
 
@@ -216,6 +238,27 @@ String representation of this object, just like it is representated in the file.
 sub as_string {
 	my ($self) = @_;
 	my $str = "";
+
+	# Check if we have the required Name property.
+	if (not defined $self->get_property('Name')) {
+		carp "Document can't be represented because the required 'Name' " .
+			'property is not defined';
+		return '';
+	}
+
+	# Check if we have the required Revision property.
+	if (not defined $self->get_property('Revision')) {
+		carp "Document can't be represented because the required 'Revision' " .
+			'property is not defined';
+		return '';
+	}
+
+	# Check if we have the required Description property.
+	if (not defined $self->get_property('Description')) {
+		carp "Document can't be represented because the required 'Description' " .
+			'property is not defined';
+		return '';
+	}
 
 	# Go through properties getting their string representations.
 	$self->foreach_property(sub {

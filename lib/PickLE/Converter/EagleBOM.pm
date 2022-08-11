@@ -81,7 +81,7 @@ sub load {
 	# Go through each line parsing the components.
 	while (my $row = $csv->getline($fh)) {
 		# Do we need to create a new category?
-		my $category = $self->document->has_category($row->[5]);
+		my $category = $self->document->get_category($row->[5]);
 		if (not defined $category) {
 			$category = PickLE::Category->new(name => $row->[5]);
 			$self->document->add_category($category);
