@@ -23,7 +23,8 @@ Has the component in the list already been picked?
 =cut
 
 has picked => (
-	is => 'rw'
+	is      => 'rw',
+	default => 0
 );
 
 =item I<name>
@@ -34,7 +35,8 @@ in the list without being too descriptive.
 =cut
 
 has name => (
-	is => 'rw'
+	is      => 'rw',
+	default => ''
 );
 
 =item I<value>
@@ -47,8 +49,8 @@ attribute also has associated clearer (C<clear_value>) and predicate
 
 has value => (
 	is        => 'rw',
-	clearer   => 'clear_value',
-	predicate => 'has_value'
+	clearer   => 1,
+	predicate => 1
 );
 
 =item I<description>
@@ -61,8 +63,8 @@ clearer (C<clear_description>) and predicate (C<has_description>) methods.
 
 has description => (
 	is        => 'rw',
-	clearer   => 'clear_description',
-	predicate => 'has_description'
+	clearer   => 1,
+	predicate => 1
 );
 
 =item I<case>
@@ -75,8 +77,8 @@ and predicate (C<has_case>) methods.
 
 has case => (
 	is        => 'rw',
-	clearer   => 'clear_case',
-	predicate => 'has_case'
+	clearer   => 1,
+	predicate => 1
 );
 
 =item I<category>
