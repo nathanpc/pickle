@@ -79,12 +79,27 @@ sub from_line {
 
 =item I<$str> = I<$prop>->C<as_string>()
 
-Gets the string representation of this object.
+Gets the string representation of this object. Will return an empty string if
+the object is poorly populated.
 
 =cut
 
 sub as_string {
 	my ($self) = @_;
+
+	# Check if we have a name.
+	if (not defined $self->name) {
+		carp "Property can't be represented because the name is not defined";
+		return '';
+	}
+
+	# Check if we have a value.
+	if (not defined $self->value) {
+		carp "Property can't be represented because the value is not defined";
+		return '';
+	}
+
+	# Properly populated property.
 	return $self->name . ': ' . $self->value;
 }
 
