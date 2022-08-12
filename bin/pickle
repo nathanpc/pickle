@@ -22,6 +22,7 @@ use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
 
 use PickLE::Document;
 use PickLE::Converter::EagleBOM;
+use PickLE::Exporter::JSON;
 use PickLE::Exporter::HTML;
 
 =head1 METHODS
@@ -104,6 +105,9 @@ sub main {
 			} else {
 				print $document->as_string . "\n";
 			}
+		} elsif ($arg_export eq 'json') {
+			# JSON
+			export_file($outputfile, PickLE::Exporter::JSON->as_string($document));
 		} elsif ($arg_export eq 'html') {
 			# HTML
 			export_file($outputfile, PickLE::Exporter::HTML->as_string($document));
@@ -171,6 +175,7 @@ sub export_file {
 	# If the filename is not defined then just print it out.
 	if (not defined $filename) {
 		print $contents . "\n";
+		return;
 	}
 
 	# Save the file with the contents.
