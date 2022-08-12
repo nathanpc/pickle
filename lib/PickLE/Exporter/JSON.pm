@@ -31,6 +31,9 @@ sub as_hash {
 	my $json = {
 		doctype => 'pickle',
 		version => 1,
+		name => undef,
+		revision => undef,
+		description => undef,
 		properties => [],
 		categories => []
 	};
@@ -38,11 +41,50 @@ sub as_hash {
 	# Populate the properties list.
 	$document->foreach_property(sub {
 		my $property = shift;
-		
-		push @{$json->{properties}}, {
-			name => $property->name,
-			value => $property->value
+
+		# Handle special properties.
+		if ($property->name eq 'Name') {
+			# Name
+			$json->{name} = $property->value;
+		} elsif ($property->name eq 'Revision') {
+			# Revision
+			$json->{revision} = $property->value;
+		} elsif ($property->name eq 'Description') {
+			# Description
+			$json->{description} = $property->value;
+		} else {
+			# All other properties.
+			push @{$json->{properties}}, {
+				name => $property->name,
+				value => $property->value
+			};
+		}
+	});
+
+	# Populate the categories list.
+	$document->foreach_category(sub {
+		my $category = shift;
+		my $cat_json = {
+			name => $category->name,
+			components => []
 		};
+
+		# Populate the components list.
+		$category->foreach_component(sub {
+			my $component = shift;
+			push @{$cat_json->{components}}, {
+				picked => (($component->picked) ? \1 : \0),
+				quantity => $component->quantity,
+				name => $component->name,
+				value => $component->value,
+				description => $component->description,
+				package => $component->case,
+				refdes => $component->refdes
+			};
+		});
+
+		# Push the category to the list.
+		push @{$json->{categories}}, $cat_json;
 	});
 
 	return $json;
