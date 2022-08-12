@@ -6,3 +6,6 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+    environment:
+      MOJO_MODE: development
+      MOJO_LISTEN: http://*:3000
