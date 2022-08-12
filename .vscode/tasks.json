@@ -27,7 +27,7 @@
 				"-it",
 				"--rm",
 				"-p",
-				"8080:8080",
+				"3000:3000",
 				"--name",
 				"${workspaceFolderBasename}-dev",
 				"${workspaceFolderBasename}-dev"
