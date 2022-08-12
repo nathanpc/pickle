@@ -102,6 +102,10 @@ sub load {
 
 	# Use the parser to get ourselves.
 	my $parser = PickLE::Parser->load($filename);
+	if (not defined $parser) {
+		return undef;
+	}
+	
 	return $parser->picklist;
 }
 

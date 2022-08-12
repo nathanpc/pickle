@@ -108,7 +108,8 @@ sub _parse {
 
 	# Go through the file line-by-line.
 	while (my $line = <$fh>) {
-		chomp $line;
+		# Clean up the line string.
+		$line =~ s/^\s+|[\s\r\n]+$//g;
 
 		# Check if we are about to parse a descriptor.
 		if ($phase == $phases->{empty}) {
