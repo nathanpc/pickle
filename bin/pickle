@@ -81,6 +81,11 @@ sub main {
 		# Read the pick list file.
 		my $inputfile = pop @ARGV;
 		$document = PickLE::Document->load($inputfile);
+
+		# Check if we were able to parse the document.
+		if (not defined $document) {
+			die "There were errors while trying to parse the document.\n";
+		}
 	}
 
 	# Are we supposed to be exporting something?
@@ -90,15 +95,15 @@ sub main {
 			die "A document must be loaded in order to be exported.\n";
 		}
 
-		if ($ARGC == 0) {
-			die "Wrong number of arguments supplied to export.\n";
-		}
-
 		my $outputfile = shift @ARGV;
 		$arg_export = lc($arg_export);
 		if ($arg_export eq 'pickle') {
 			# Regular PickLE document.
-			$document->save($outputfile);
+			if (defined $outputfile) {
+				$document->save($outputfile);
+			} else {
+				print $document->as_string . "\n";
+			}
 		} elsif ($arg_export eq 'html') {
 			# HTML
 			export_file($outputfile, PickLE::Exporter::HTML->as_string($document));
@@ -155,13 +160,20 @@ sub print_document {
 
 =item C<export_file>(I<$filename>, I<$contents>)
 
-Saves the I<$contents> to a file with I<$filename>.
+Saves the I<$contents> to a file with I<$filename>. If I<$filename> is C<undef>
+the I<$contents> are printed out to C<stdout>.
 
 =cut
 
 sub export_file {
 	my ($filename, $contents) = @_;
 
+	# If the filename is not defined then just print it out.
+	if (not defined $filename) {
+		print $contents . "\n";
+	}
+
+	# Save the file with the contents.
 	open my $fh, '>:encoding(UTF-8)', $filename;
 	print $fh $contents;
 	close $fh;
