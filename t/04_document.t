@@ -2,11 +2,23 @@
 
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 use PickLE::Category;
 use PickLE::Component;
 BEGIN { use_ok('PickLE::Document'); }
+
+# Slurps a file.
+sub slurp {
+    my ($filename) = @_;
+
+    open my $fh, '<:encoding(UTF-8)', $filename or die;
+    local $/ = undef;
+    my $content = <$fh>;
+    close $fh;
+
+    return $content;
+}
 
 # Blank start.
 my $doc = new_ok('PickLE::Document');
@@ -27,3 +39,9 @@ $doc->add_category(PickLE::Category->new);
 is scalar(@{$doc->categories}), 1, '1 category in the array';
 $doc->add_category(PickLE::Category->new);
 is scalar(@{$doc->categories}), 2, '2 categories in the array';
+
+# Parsing
+$doc = PickLE::Document->load('examples/example.pkl');
+isa_ok $doc, 'PickLE::Document';
+$doc = PickLE::Document->from_string(slurp('examples/example.pkl'));
+isa_ok $doc, 'PickLE::Document';

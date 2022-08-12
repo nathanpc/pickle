@@ -8,6 +8,7 @@ C<PickLE::Document> - Component pick list document abstraction
 
 package PickLE::Document;
 
+use 5.010;
 use strict;
 use warnings;
 use autodie;
@@ -16,8 +17,9 @@ use Carp;
 use List::Util qw(any);
 use Scalar::Util qw(reftype);
 
+use PickLE::Property;
 use PickLE::Category;
-use PickLE::Parser;
+use PickLE::Component;
 
 =head1 SYNOPSIS
 
@@ -100,13 +102,34 @@ sub load {
 	my ($proto, $filename) = @_;
 	my $self = (ref $proto) ? $proto : $proto->new;
 
-	# Use the parser to get ourselves.
-	my $parser = PickLE::Parser->load($filename);
-	if (not defined $parser) {
-		return undef;
-	}
-	
-	return $parser->picklist;
+	# Parse the file.
+	open my $fh, '<:encoding(UTF-8)', $filename;
+	$self->_parse($fh) or return undef;
+	close $fh;
+
+	return $self;
+}
+
+=item I<$doc> = C<PickLE::Document>->C<from_string>(I<$str>)
+
+=item I<$doc>->C<from_string>(I<$str>)
+
+Parses a component pick list document from a string I<$str>. This method can be
+called statically, or as an object method. In both cases a brand new object will
+be contructed.
+
+=cut
+
+sub from_string {
+	my ($proto, $str) = @_;
+	my $self = (ref $proto) ? $proto : $proto->new;
+
+	# Parse the document.
+	open my $fh, '<:encoding(UTF-8)', \$str;
+	$self->_parse($fh) or return undef;
+	close $fh;
+
+	return $self;
 }
 
 =item I<$doc>->C<add_property>(I<@property>)
@@ -286,6 +309,114 @@ sub as_string {
 	});
 
 	return $str;
+}
+
+=back
+
+=head1 PRIVATE METHODS
+
+=over 4
+
+=item I<$status> = I<$self>->C<_parse>(I<$fh>)
+
+Parses the contents of a file or scalar handle (I<$fh>) and populates the
+object. Returns C<0> if there were parsing errors.
+
+=cut
+
+sub _parse {
+	my ($self, $fh) = @_;
+	my $status = 1;
+	my $phases = {
+		empty	   => 0,
+		property   => 1,
+		descriptor => 2,
+		refdes	   => 3,
+	};
+	my $phase = $phases->{property};
+	my $component = undef;
+	my $category = undef;
+
+	# Go through the file line-by-line.
+	while (my $line = <$fh>) {
+		# Clean up the line string.
+		$line =~ s/^\s+|[\s\r\n]+$//g;
+
+		# Check if we are about to parse a descriptor.
+		if ($phase == $phases->{empty}) {
+			if (substr($line, 0, 1) eq '[') {
+				# Looks like we have to parse a descriptor line.
+				$phase = $phases->{descriptor};
+			} elsif (substr($line, -1, 1) eq ':') {
+				# Got a category line.
+				if (defined $category) {
+					# Append the last category we parsed to the list.
+					$self->add_category($category);
+				}
+
+				# Parse the new category.
+				$category = PickLE::Category->from_line($line);
+				if (not defined $category) {
+					# Looks like the category line was malformed.
+					carp "Error parsing category '$line'";
+					$status = 0;
+				}
+
+				next;
+			} elsif ($line eq '') {
+				# Just another empty line...
+				next;
+			}
+		} elsif ($phase == $phases->{refdes}) {
+			# Parse the reference designators.
+			$component->parse_refdes_line($line);
+
+			# Append the component to the pick list and go to the next line.
+			$category->add_component($component);
+			$component = undef;
+			$phase = $phases->{empty};
+			next;
+		} elsif ($phase == $phases->{property}) {
+			# Looks like we are in the properties header.
+			if ($line eq '') {
+				# Just another empty line...
+				next;
+			} elsif ($line eq '---') {
+				# We've finished parsing the properties header.
+				$phase = $phases->{empty};
+				next;
+			}
+			
+			# Parse the property.
+			my $prop = PickLE::Property->from_line($line);
+			if (not defined $prop) {
+				# Looks like the property line was malformed.
+				carp "Error parsing property '$line'";
+				$status = 0;
+			}
+
+			# Append the property to the properties list of the document.
+			$self->add_property($prop);
+			next;
+		}
+
+		# Parse the descriptor line into a component.
+		$component = PickLE::Component->from_line($line);
+		$phase = $phases->{refdes};
+		if (not defined $component) {
+			# Looks like the descriptor line was malformed.
+			carp "Error parsing component descriptor '$line'";
+			$status = 0;
+		}
+	}
+
+	# Make sure we get that last category.
+	if (defined $category) {
+		# Append the last category we parsed to the list.
+		$self->add_category($category);
+	}
+
+	return $status;
 }
 
 1;
