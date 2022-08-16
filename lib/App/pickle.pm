@@ -14,6 +14,7 @@ use autodie;
 use utf8;
 use Moo;
 
+use PickLE;
 use PickLE::Document;
 
 =head1 ATTRIBUTES

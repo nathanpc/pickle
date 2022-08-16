@@ -1,12 +1,23 @@
-=pod
+#!/usr/bin/env perl
+
+=cut
+
+package PickLE;
+
+use strict;
+use warnings;
+use 5.010;
+use version; our $VERSION = version->declare('v0.1.0');
+
+1;
+
+__END__
+
+=encoding utf8
 
 =head1 NAME
 
 PickLE - An electronic component pick list application and file parser library.
-
-=head1 VERSION
-
-0.1.0
 
 =head1 SUMMARY
 

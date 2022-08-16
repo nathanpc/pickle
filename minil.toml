@@ -1,9 +1,6 @@
 name = "PickLE"
-
-readme_from = "README.pod"
-abstract_from = "README.pod"
-authors_from = "README.pod"
-
 license="artistic_2"
+authority = "cpan:NATHANPC"
 module_maker="ModuleBuildTiny"
+badges = ['metacpan']
 static_install = "auto"
