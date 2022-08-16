@@ -12,8 +12,16 @@ use strict;
 use warnings;
 use autodie;
 use utf8;
+use OptArgs2 'class_optargs';
 use Moo;
 
+# Include the project module directory.
+use FindBin;
+use File::Spec;
+use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
+
+use PickLE;
+use App::pickle::OptArgs;
 use PickLE::Document;
 
 =head1 ATTRIBUTES
@@ -107,7 +115,10 @@ sub print_document {
 	});
 }
 
-1;
+# Load up the application.
+my ($class, $opts) = class_optargs('App::pickle');
+eval "require $class" or die $@;
+$class->new($opts)->run;
 
 __END__
 

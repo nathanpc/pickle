@@ -41,7 +41,7 @@ $doc->add_category(PickLE::Category->new);
 is scalar(@{$doc->categories}), 2, '2 categories in the array';
 
 # Parsing
-$doc = PickLE::Document->load('examples/example.pkl');
+$doc = PickLE::Document->load('contrib/example.pkl');
 isa_ok $doc, 'PickLE::Document';
-$doc = PickLE::Document->from_string(slurp('examples/example.pkl'));
+$doc = PickLE::Document->from_string(slurp('contrib/example.pkl'));
 isa_ok $doc, 'PickLE::Document';

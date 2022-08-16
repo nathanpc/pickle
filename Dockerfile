@@ -44,9 +44,6 @@ COPY --from=build /src/app/vendor ./vendor
 COPY --from=build /src/app/lib ./lib
 COPY --from=build /src/app/bin ./bin
 
-# TODO: REMOVE THIS LINE.
-COPY --from=build /src/app/examples ./examples
-
 EXPOSE 3000
 
 ENTRYPOINT [ "/usr/bin/perl", "-I./lib", "-Mlocal::lib=./vendor", \
