@@ -38,6 +38,23 @@ subcmd 'App::pickle::import' => (
 	},
 );
 
+subcmd 'App::pickle::export' => (
+	comment => 'Exports a PickLE pick list in another format',
+	optargs => sub {
+		arg 'type' => (
+			comment  => 'File type. Supported formats: html, json',
+			isa      => 'Str',
+			required => 1,
+		);
+
+		arg 'file' => (
+			comment  => 'PickLE pick list to be exported',
+			isa      => 'Str',
+			required => 1,
+		);
+	},
+);
+
 1;
 
 __END__
