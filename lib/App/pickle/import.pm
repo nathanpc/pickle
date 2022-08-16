@@ -92,10 +92,12 @@ sub import_file {
 		# Eagle CAD.
 		my $bom = PickLE::Converter::EagleBOM->load($self->{file});
 		$self->_set_document($bom->document);
-	} else {
-		# Unknown type to import.
-		die "Unknown type of file to be imported. Supported types: eagle\n";
+
+		return;
 	}
+
+	# Unknown type to import.
+	die "Unknown type of file to be imported. Supported types: eagle\n";
 }
 
 1;
