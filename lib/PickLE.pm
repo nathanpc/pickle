@@ -7,7 +7,9 @@ package PickLE;
 use strict;
 use warnings;
 use 5.010;
-use version; our $VERSION = version->declare('v0.1.0');
+use version;
+
+our $VERSION = version->declare('v0.1.0');
 
 1;
 
