@@ -1,7 +1,5 @@
 #!/usr/bin/env perl
 
-=cut
-
 package PickLE;
 
 use strict;

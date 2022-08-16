@@ -20,6 +20,7 @@ use FindBin;
 use File::Spec;
 use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
 
+use PickLE;
 use App::pickle::OptArgs;
 use PickLE::Document;
 
