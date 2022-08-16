@@ -21,6 +21,23 @@ cmd 'App::pickle' => (
 	},
 );
 
+subcmd 'App::pickle::import' => (
+	comment => 'Converts another file into a PickLE pick list',
+	optargs => sub {
+		arg 'type' => (
+			comment  => 'File type. Supported formats: eagle (Eagle BOM CSV)',
+			isa      => 'Str',
+			required => 1,
+		);
+
+		arg 'file' => (
+			comment  => 'File to be imported',
+			isa      => 'Str',
+			required => 1,
+		);
+	},
+);
+
 1;
 
 __END__
