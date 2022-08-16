@@ -47,7 +47,7 @@ has file => (
 
 =over 4
 
-=item I<$self>->C<run>()
+=item C<run>()
 
 OptArgs command entry point.
 
@@ -69,7 +69,7 @@ sub run {
 	$self->print_document;
 }
 
-=item I<$self>->C<print_document>()
+=item C<print_document>()
 
 Prints the contents of the I<document> in a pretty way.
 
