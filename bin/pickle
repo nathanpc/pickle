@@ -1,191 +1,21 @@
 #!/usr/bin/env perl
 
-=head1 NAME
-
-C<App::PickLE> - An electronic component pick list application.
-
-=cut
-
-package App::PickLE;
-
 use strict;
 use warnings;
-use autodie;
-use utf8;
-use Getopt::Long qw(GetOptions);
-Getopt::Long::Configure qw(gnu_getopt);
+use OptArgs2 'class_optargs';
 
 # Include the project module directory.
 use FindBin;
 use File::Spec;
 use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
 
-use PickLE::Document;
-use PickLE::Converter::EagleBOM;
-use PickLE::Exporter::JSON;
-use PickLE::Exporter::HTML;
+use App::pickle::OptArgs;
+ 
+my ($class, $opts) = class_optargs('App::pickle');
+eval "require $class" or die $@;
+$class->new($opts)->run;
 
-=head1 METHODS
-
-=over 4
-
-=item C<main>()
-
-Program's main entry point.
-
-=cut
-
-sub main {
-	# Enable UTF-8 output.
-	binmode STDOUT, ":encoding(utf8)";
-
-	# Some global-ish variables.
-	my $document = undef;
-
-	# Variables for the command-line arguments.
-	my $arg_import = undef;
-	my $arg_export = undef;
-
-	# Get the command-line options.
-	GetOptions(
-		'import|i=s' => \$arg_import,
-		'export|x=s' => \$arg_export,
-	) or die "No arguments were supplied.";
-	my $ARGC = scalar @ARGV;
-
-	# Are we importing some file?
-	if (defined $arg_import) {
-		# We are importing...
-		if ($ARGC == 0) {
-			die "Wrong number of arguments supplied to import.\n";
-		}
-
-		my $inputfile = shift @ARGV;
-		$arg_import = lc($arg_import);
-		if ($arg_import eq 'eagle') {
-			# Eagle CAD.
-			my $bom = PickLE::Converter::EagleBOM->load($inputfile);
-			$document = $bom->document;
-		} else {
-			# Unknown type to import.
-			die "Unknown type of file to be imported.\n";
-		}
-	}
-
-	# Load a pick list document.
-	$ARGC = scalar @ARGV;
-	if (not defined $document) {
-		if ($ARGC == 0) {
-			die "Wrong number of arguments supplied to read document.\n";
-		}
-
-		# Read the pick list file.
-		my $inputfile = pop @ARGV;
-		$document = PickLE::Document->load($inputfile);
-
-		# Check if we were able to parse the document.
-		if (not defined $document) {
-			die "There were errors while trying to parse the document.\n";
-		}
-	}
-
-	# Are we supposed to be exporting something?
-	$ARGC = scalar @ARGV;
-	if (defined $arg_export) {
-		if (not defined $document) {
-			die "A document must be loaded in order to be exported.\n";
-		}
-
-		my $outputfile = shift @ARGV;
-		$arg_export = lc($arg_export);
-		if ($arg_export eq 'pickle') {
-			# Regular PickLE document.
-			if (defined $outputfile) {
-				$document->save($outputfile);
-			} else {
-				print $document->as_string . "\n";
-			}
-		} elsif ($arg_export eq 'json') {
-			# JSON
-			export_file($outputfile, PickLE::Exporter::JSON->as_string($document));
-		} elsif ($arg_export eq 'html') {
-			# HTML
-			export_file($outputfile, PickLE::Exporter::HTML->as_string($document));
-		} else {
-			# Unknown type to export.
-			die "Unknown type of file to be exported.\n";
-		}
-
-		return 0;
-	}
-
-	# If there's nothing left to do, let's just print the document contents.
-	print_document($document);
-	return 0;
-}
-
-=item C<print_document>(I<$document>)
-
-Prints the contents of a L<PickLE::Document> in a pretty way.
-
-=cut
-
-sub print_document {
-	my ($document) = @_;
-
-	# Go through properties.
-	$document->foreach_property(sub {
-		my $property = shift;
-		print $property->name . ":\t" . $property->value . "\n";
-	});
-	print "\n";
-
-	# Go through categories listing the components in them.
-	$document->foreach_category(sub {
-		my $category = shift;
-		print $category->name . ":\n";
-
-		$category->foreach_component(sub {
-			my $component = shift;
-
-			# TODO: Make this output like tree.
-			print '  ';
-			print (($component->picked) ? "\x{2611}" : "\x{2610}");
-			print ' ' . $component->quantity . "\t";
-			print $component->value . "\t" if defined $component->value;
-			print $component->name . "\t";
-			print $component->description if defined $component->description;
-			print "\n";
-		});
-
-		print "\n";
-	});
-}
-
-=item C<export_file>(I<$filename>, I<$contents>)
-
-Saves the I<$contents> to a file with I<$filename>. If I<$filename> is C<undef>
-the I<$contents> are printed out to C<stdout>.
-
-=cut
-
-sub export_file {
-	my ($filename, $contents) = @_;
-
-	# If the filename is not defined then just print it out.
-	if (not defined $filename) {
-		print $contents . "\n";
-		return;
-	}
-
-	# Save the file with the contents.
-	open my $fh, '>:encoding(UTF-8)', $filename;
-	print $fh $contents;
-	close $fh;
-}
-
-# Start the program.
-main();
+__END__
 
 =back
 
