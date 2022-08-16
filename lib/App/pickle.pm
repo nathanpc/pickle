@@ -54,7 +54,7 @@ OptArgs command entry point.
 =cut
 
 sub run {
-	my ($self, $opts) = @_;
+	my ($self) = @_;
 
 	# Enable UTF-8 output.
 	binmode STDOUT, ":encoding(utf8)";
