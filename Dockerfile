@@ -42,9 +42,9 @@ RUN cpanm -n -i local::lib
 WORKDIR /src/app
 COPY --from=build /src/app/vendor ./vendor
 COPY --from=build /src/app/lib ./lib
-COPY --from=build /src/app/bin ./bin
+COPY --from=build /src/app/script ./script
 
 EXPOSE 3000
 
 ENTRYPOINT [ "/usr/bin/perl", "-I./lib", "-Mlocal::lib=./vendor", \
-	"./bin/picklews", "prefork" ]
+	"./script/picklews", "prefork" ]
