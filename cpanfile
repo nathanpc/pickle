@@ -10,6 +10,8 @@ on 'runtime' => sub {
 	requires 'XML::Writer', '>= 0.900';
 	requires 'JSON::MaybeXS', '>= 1.004003';
 	requires 'Mojolicious', '>= 9.26';
+	requires 'Exception::Base', '>= 0.2501';
+	requires 'Try::Tiny', '>= 0.31';
 };
 
 on 'test' => sub {
