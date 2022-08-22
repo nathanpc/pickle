@@ -3,13 +3,14 @@
 use strict;
 use warnings;
 use Test::More tests => 9;
+use Test::Exception;
 
 use PickLE::Component;
 BEGIN { use_ok('PickLE::Category'); }
 
 # Blank start.
 my $cat = new_ok('PickLE::Category');
-ok $cat->as_string eq '', 'as_string is empty for a blank object';
+throws_ok { $cat->as_string } 'PickLE::Exception::Simple', 'as_string throws exception for a blank object';
 
 # Name
 is $cat->name, undef, 'name initialized as undefined';

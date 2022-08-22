@@ -10,8 +10,8 @@ package PickLE::Category;
 
 use strict;
 use warnings;
-use Carp;
 use Moo;
+use PickLE::Exception::Simple;
 
 =head1 ATTRIBUTES
 
@@ -125,8 +125,9 @@ sub as_string {
 
 	# Check if we have a name.
 	if (not defined $self->name) {
-		carp "Category can't be represented because the name is not defined";
-		return '';
+		die PickLE::Exception::Simple->throw(
+			message => "Category can't be represented because the name is not defined"
+		);
 	}
 
 	# Properly populated category.
