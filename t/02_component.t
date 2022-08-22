@@ -3,12 +3,13 @@
 use strict;
 use warnings;
 use Test::More tests => 36;
+use Test::Exception;
 
 BEGIN { use_ok('PickLE::Component'); }
 
 # Blank start.
 my $comp = new_ok('PickLE::Component');
-ok $comp->as_string eq '', 'as_string is empty for a blank object';
+throws_ok { $comp->as_string } 'PickLE::Exception::Simple', 'as_string throws exception for a blank object';
 
 # Name
 is $comp->name, '', 'name initialized as empty string';

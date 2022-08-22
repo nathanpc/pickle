@@ -10,8 +10,9 @@ package PickLE::Component;
 
 use strict;
 use warnings;
-use Carp;
 use Moo;
+
+use PickLE::Exception::Simple;
 
 =head1 ATTRIBUTES
 
@@ -228,8 +229,9 @@ sub as_string {
 
 	# Make sure we have a name.
 	if (not $self->_attr_available($self->name)) {
-		carp "Component can't be represented because no name has been defined";
-		return '';
+		die PickLE::Exception::Simple->throw(
+			message => "Component can't be represented because no name has been defined"
+		);
 	}
 
 	# First line.

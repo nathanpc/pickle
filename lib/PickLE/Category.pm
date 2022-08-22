@@ -11,6 +11,7 @@ package PickLE::Category;
 use strict;
 use warnings;
 use Moo;
+
 use PickLE::Exception::Simple;
 
 =head1 ATTRIBUTES
