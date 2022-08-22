@@ -13,6 +13,7 @@ use warnings;
 use Moo;
 
 use PickLE::Exception::Simple;
+use PickLE::Exception::Parser;
 
 =head1 ATTRIBUTES
 
@@ -70,7 +71,7 @@ sub from_line {
 	$self = $self->new() unless ref $self;
 
 	# Try to parse the category line.
-	if ($line =~ /(?<name>[^:]+):\s*/) {
+	if ($line =~ /^(?<name>[^:]+):\s*$/) {
 		# Populate our object.
 		$self->name($+{name});
 
@@ -78,7 +79,11 @@ sub from_line {
 	}
 
 	# Looks like the category line couldn't be parsed.
-	return undef;
+	die PickLE::Exception::Parser->throw(
+		message => "Malformed category line",
+		docline => $line,
+		linenum => undef
+	);
 }
 
 =item I<$category>->C<add_component>(I<@component>)

@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 14;
 use Test::Exception;
 
 use PickLE::Component;
@@ -24,3 +24,11 @@ $cat->add_component(PickLE::Component->new);
 is scalar(@{$cat->components}), 1, '1 component in the array';
 $cat->add_component(PickLE::Component->new);
 is scalar(@{$cat->components}), 2, '2 components in the array';
+
+# Parsing
+$cat = PickLE::Category->from_line('Some Category:');
+ok defined $cat && $cat->isa('PickLE::Category'), 'parses a properly formed line';
+is $cat->name, 'Some Category', 'properly parsed the name';
+throws_ok { PickLE::Category->from_line('Some Category') } 'PickLE::Exception::Parser', 'throws exception for name without colon';
+throws_ok { PickLE::Category->from_line('Some Category::') } 'PickLE::Exception::Parser', 'throws exception for name with double colon';
+throws_ok { PickLE::Category->from_line(':') } 'PickLE::Exception::Parser', 'throws exception for colon only';
