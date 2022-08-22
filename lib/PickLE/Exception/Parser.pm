@@ -11,8 +11,8 @@ package PickLE::Exception::Parser;
 use strict;
 use warnings;
 use Exception::Base (__PACKAGE__) => {
-	has => [ 'linenum', 'line' ],
-	string_attributes => [ 'message', 'line' ]
+	has => [ 'linenum', 'docline' ],
+	string_attributes => [ 'message', 'docline' ]
 };
 
 =head1 ATTRIBUTES
@@ -27,7 +27,7 @@ A descriptive message about the parsing error.
 
 Number of the line where the parsing error occurred.
 
-=item I<line>
+=item I<docline>
 
 The actual line string that caused the parsing error.
 
